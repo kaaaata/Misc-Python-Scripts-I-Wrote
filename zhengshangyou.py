@@ -355,8 +355,11 @@ def new_game(): # declares fresh variables for a new game, and starts your turn
     
 def show(table): # shows/refreshes the table
     clear()
-    #print('\nOpponent:\n[{}]'.format('] ['.join(['#']*len(table['opps_hand']))))
-    print('\nOpponent:\n[{}]'.format('] ['.join(Cards(table['opps_hand'], '[C]').display)))
+    print('\nOpponent:\n[{}]'.format('] ['.join(['#']*len(table['opps_hand']))))
+    # Enable above line to conceal opponent's hand (realistic)
+    # Enable below line to reveal opponent's hand (cheating)
+    #print('\nOpponent:\n[{}]'.format('] ['.join(Cards(table['opps_hand'], '[C]').display)))
+    
     print('\nTable: {}'.format(' '.join(table['cards'])))
     print('\nYou:\n[{}]'.format('] ['.join(Cards(table['your_hand'], '[C]').display)))
 
@@ -368,18 +371,18 @@ def main(): # main function containing instructions
         if x == 'H':
             clear()
             print('\n\
-Single            [3]                   \n\
-Pair              [4][4]                \n\
-Triplet           [5][5][5]             \n\
-Straight          [3][4][5][6][7]       Can\'t include [2] or [!]! Must be length 5!\n\
-Full House        [8][8][8][9][9]       Kills all Straight!\n\
-Chain Pair     [10][10][J][J][Q][Q]  Can be any length!\n\
-Chain Triplet  [K][K][K][A][A][A]    Can be any length!\n\
-Bomb              [2][2][2][2]([3])     Kills everything! Optional: carry extra card!\n\
-\n\
-\'pass\' or \'p\': pass\n\
-[!]          : little joker\n\
-[!!]         : big joker')
+                Single            [3]                   \n\
+                Pair              [4][4]                \n\
+                Triplet           [5][5][5]             \n\
+                Straight          [3][4][5][6][7]       Can\'t include [2] or [!]! Must be length 5!\n\
+                Full House        [8][8][8][9][9]       Kills all Straight!\n\
+                Chain Pair     [10][10][J][J][Q][Q]  Can be any length!\n\
+                Chain Triplet  [K][K][K][A][A][A]    Can be any length!\n\
+                Bomb              [2][2][2][2]([3])     Kills everything! Optional: carry extra card!\n\
+                \n\
+                \'pass\' or \'p\': pass\n\
+                [!]          : little joker\n\
+                [!!]         : big joker')
             input()
             new_game()
         else:
