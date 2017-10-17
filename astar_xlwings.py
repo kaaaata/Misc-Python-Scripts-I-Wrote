@@ -7,13 +7,14 @@ import xlwings as xw
 
 #########################
 
+# debugging notes: fails for g32 -> w2
 
 a = 'abcdefghijklmnopqrstuvwxyz'
 maze_start = input('input start cell like "a10": ')
 maze_end = input('input end cell like "t20": ')
 
 # testing variables
-y_max_bound = 40
+y_max_bound = 100
 
 
                  
@@ -41,9 +42,12 @@ class Astar:
         for i in a:
             for j in range(1,y_max_bound+1):
                 self.cells.append(Cell(i,str(j)))
-                # remove all previously drawn paths
+                # remove all previously drawn paths & traversal-order numbers
                 if self.cells[-1].color not in ((None),(0,0,0)):
                     xw.books('astar_xlwings.xlsm').sheets(1).range(self.cells[-1].coordinates).color = None
+                    xw.books('astar_xlwings.xlsm').sheets(1).range(self.cells[-1].coordinates).value = ''
+                if self.cells[-1].color == None:
+                    xw.books('astar_xlwings.xlsm').sheets(1).range(self.cells[-1].coordinates).value = ''
         self.start = self.get_cell(maze_start)
         self.end = self.get_cell(maze_end)
 
@@ -74,11 +78,14 @@ class Astar:
 
     def astar(self):
         self.init_grid()
+        order = 1 # debug variable
         print('thinking...')
         current = self.start.coordinates
         self.openset.add(current)
         while self.openset:
             current = min(self.openset,key=lambda x:self.get_cell(x).f)
+            xw.books('astar_xlwings.xlsm').sheets(1).range(current).value = order
+            order += 1
             self.openset.remove(current)
             self.closedset.add(current)
             # loop through children
@@ -92,7 +99,7 @@ class Astar:
                         self.path.append(self.start.coordinates)
                         self.path.reverse()
                         return self.path
-                    if i.coordinates in self.openset and i.g <= self.get_cell(current).g:
+                    if i.coordinates in self.openset and i.f <= self.get_cell(current).f:
                         i.g = self.get_cell(current).g + 1
                         i.h = self.distance(i.coordinates,self.end.coordinates)
                         i.f = i.g + i.h
@@ -121,6 +128,3 @@ def show(path):
 astar = Astar()
 path = astar.astar()
 show(path)
-
-
-
