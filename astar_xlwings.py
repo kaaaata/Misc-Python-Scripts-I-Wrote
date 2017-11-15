@@ -2,12 +2,10 @@ import xlwings as xw
 
 ###############################
 
-# 1. draw some maze in excel with black cells = walls (y_max_bound 40 for testing)
+# 1. draw some maze in excel with black cells = walls (y_max_bound 100 for testing)
 # 2. run this, it will prompt input of start and end coordinates
 
 #########################
-
-# debugging notes: fails for g32 -> w2
 
 a = 'abcdefghijklmnopqrstuvwxyz'
 maze_start = input('input start cell like "a10": ')
@@ -15,8 +13,6 @@ maze_end = input('input end cell like "t20": ')
 
 # testing variables
 y_max_bound = 100
-
-
                  
 class Cell:
     def __init__(self,x,y):
@@ -78,27 +74,30 @@ class Astar:
 
     def astar(self):
         self.init_grid()
-        order = 1 # debug variable
+        # order = 1 # debug variable
         print('thinking...')
         current = self.start.coordinates
         self.openset.add(current)
         while self.openset:
             current = min(self.openset,key=lambda x:self.get_cell(x).f)
-            xw.books('astar_xlwings.xlsm').sheets(1).range(current).value = order
-            order += 1
+            # enable below 2 lines if you want to see the order of explored cells
+            # xw.books('astar_xlwings.xlsm').sheets(1).range(current).value = order 
+            # order += 1
             self.openset.remove(current)
             self.closedset.add(current)
+
+            # if the maze is solved
+            if current == self.end.coordinates:
+                while self.get_cell(current).parent != None:
+                    self.path.append(current)
+                    current = self.get_cell(current).parent
+                self.path.append(self.start.coordinates)
+                self.path.reverse()
+                return self.path
+            
             # loop through children
             for i in self.adj_cells(current):
                 if not i.is_wall and i.coordinates not in self.closedset:
-                    # if the maze is solved
-                    if current == self.end.coordinates:
-                        while self.get_cell(current).parent != None:
-                            self.path.append(current)
-                            current = self.get_cell(current).parent
-                        self.path.append(self.start.coordinates)
-                        self.path.reverse()
-                        return self.path
                     if i.coordinates in self.openset and i.f <= self.get_cell(current).f:
                         i.g = self.get_cell(current).g + 1
                         i.h = self.distance(i.coordinates,self.end.coordinates)
@@ -110,6 +109,7 @@ class Astar:
                         i.f = i.g + i.h
                         i.parent = current
                         self.openset.add(i.coordinates)
+                        
         # if the maze is not solvable
         return ['no solution']
 
